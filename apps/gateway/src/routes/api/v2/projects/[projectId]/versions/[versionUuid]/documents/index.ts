@@ -7,7 +7,7 @@ import { logsRouterV2 } from './logs'
 const router = new OpenAPIHono()
 
 router.get('/:documentPath{.+}', ...getHandler)
-router.route('/run', runHandler)
 router.route('/logs', logsRouterV2)
+router.route('/run', runHandler)
 
 export { router as documentsRouter }
