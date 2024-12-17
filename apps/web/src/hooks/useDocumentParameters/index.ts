@@ -19,7 +19,7 @@ const EMPTY_INPUTS: PlaygroundInputs<'manual'> = {
   manual: { inputs: {} },
   dataset: {
     datasetId: undefined,
-    rowIndex: undefined,
+    rowIndex: 0,
     inputs: {},
     mappedInputs: {},
   },

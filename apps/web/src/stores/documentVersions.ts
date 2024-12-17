@@ -3,6 +3,7 @@
 import { useCallback } from 'react'
 
 import { assignDatasetAction } from '$/actions/documents/assignDatasetAction'
+import { saveLinkedDatasetAction } from '$/actions/documents/saveLinkedDatasetAction'
 import { createDocumentVersionAction } from '$/actions/documents/create'
 import { createDocumentVersionFromTraceAction } from '$/actions/documents/createFromTrace'
 import { destroyDocumentAction } from '$/actions/documents/destroyDocumentAction'
@@ -276,7 +277,19 @@ export default function useDocumentVersions(
     },
   )
 
-  const { execute: assignDataset } = useLatitudeAction(assignDatasetAction, {
+  const { execute: assignDataset } = useLatitudeAction(saveLinkedDatasetAction, {
+    onSuccess: ({ data: document }) => {
+      const prevDocuments = data || []
+      mutate(
+        prevDocuments.map((d) =>
+          d.documentUuid === document.documentUuid ? document : d,
+        ),
+      )
+    },
+  })
+
+
+  const { execute: saveLinkedDataset } = useLatitudeAction(assignDatasetAction, {
     onSuccess: ({ data: document }) => {
       const prevDocuments = data || []
       mutate(
@@ -320,6 +333,7 @@ export default function useDocumentVersions(
     destroyFolder,
     updateContent,
     assignDataset,
+    saveLinkedDataset,
     mutate,
     isDestroying: isDestroyingFile || isDestroyingFolder,
   }
