@@ -69,10 +69,7 @@ export function useLogHistoryParams({
       const log = logs[0]
       if (!log) return
 
-      mapDocParametersToInputs({
-        source: 'history',
-        parameters: log.parameters,
-      })
+      mapDocParametersToInputs({ parameters: log.parameters })
       setHistoryLog(log.uuid)
     },
   })

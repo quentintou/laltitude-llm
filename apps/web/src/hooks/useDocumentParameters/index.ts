@@ -23,8 +23,8 @@ import useDocumentVersions from '$/stores/documentVersions'
 
 const EMPTY_LINKED_DATASET = {
   rowIndex: 0,
-  inputs: {},
-  mappedInputs: {},
+  inputs: {} as LinkedDataset['inputs'],
+  mappedInputs: {} as LinkedDataset['mappedInputs'],
 }
 const EMPTY_INPUTS: PlaygroundInputs<'manual'> = {
   source: INPUT_SOURCE.manual,
@@ -103,13 +103,14 @@ export function useDocumentParameters({
   const source = inputs.source
 
   const datasetId = document.datasetId
-  const linkedDataset = datasetId
-    ? document.linkedDataset?.[datasetId]
-    : EMPTY_LINKED_DATASET
+  const linkedDataset =
+    datasetId && document.linkedDataset?.[datasetId]
+      ? document.linkedDataset[datasetId]
+      : EMPTY_LINKED_DATASET
 
   let inputsBySource =
     source === INPUT_SOURCE.dataset
-      ? (linkedDataset?.inputs ?? EMPTY_LINKED_DATASET.inputs)
+      ? linkedDataset.inputs
       : inputs[source].inputs
 
   const setInputs = useCallback(

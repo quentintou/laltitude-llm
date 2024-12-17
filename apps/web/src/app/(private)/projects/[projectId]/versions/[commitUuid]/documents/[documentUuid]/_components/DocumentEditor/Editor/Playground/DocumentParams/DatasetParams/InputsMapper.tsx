@@ -1,7 +1,7 @@
 import { useDocumentParameters } from '$/hooks/useDocumentParameters'
 import {
   Dataset,
-  DatasetSource,
+  LinkedDataset,
   DocumentVersion,
   PlaygroundInput,
 } from '@latitude-data/core/browser'
@@ -42,7 +42,7 @@ export function InputMapper({
 }: {
   document: DocumentVersion
   commit: ICommitContextType['commit']
-  mappedInputs: DatasetSource['mappedInputs']
+  mappedInputs: LinkedDataset['mappedInputs']
   headersOptions: DatasetPreview['headersOptions']
   onSelectHeader: UseSelectDataset['onSelectHeader']
   isLoading: boolean

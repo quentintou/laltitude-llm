@@ -277,22 +277,19 @@ export default function useDocumentVersions(
     },
   )
 
-  const { execute: assignDataset } = useLatitudeAction(
-    saveLinkedDatasetAction,
-    {
-      onSuccess: ({ data: document }) => {
-        const prevDocuments = data || []
-        mutate(
-          prevDocuments.map((d) =>
-            d.documentUuid === document.documentUuid ? document : d,
-          ),
-        )
-      },
+  const { execute: assignDataset } = useLatitudeAction(assignDatasetAction, {
+    onSuccess: ({ data: document }) => {
+      const prevDocuments = data || []
+      mutate(
+        prevDocuments.map((d) =>
+          d.documentUuid === document.documentUuid ? document : d,
+        ),
+      )
     },
-  )
+  })
 
   const { execute: saveLinkedDataset } = useLatitudeAction(
-    assignDatasetAction,
+    saveLinkedDatasetAction,
     {
       onSuccess: ({ data: document }) => {
         const prevDocuments = data || []
