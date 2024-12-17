@@ -298,7 +298,7 @@ export function useDocumentParameters({
           data: {
             rowIndex: linkedDataset.rowIndex,
             mappedInputs: linkedDataset.mappedInputs,
-            inputs: datasetInputs
+            inputs: datasetInputs,
           },
         })
       }

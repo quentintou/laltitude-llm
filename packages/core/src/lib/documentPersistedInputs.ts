@@ -25,9 +25,9 @@ type LocalPlaygroundInput<_S extends LocalInputSource = 'manual'> = {
 }
 export type PlaygroundInput<S extends InputSource> = S extends 'dataset'
   ? {
-    value: string
-    metadata: PlaygroundInputMetadata & { includeInPrompt: boolean }
-  }
+      value: string
+      metadata: PlaygroundInputMetadata & { includeInPrompt: boolean }
+    }
   : LocalPlaygroundInput<LocalInputSource>
 
 type ManualInput = PlaygroundInput<'manual'>
