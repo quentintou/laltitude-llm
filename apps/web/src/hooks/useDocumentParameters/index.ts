@@ -265,7 +265,7 @@ export function useDocumentParameters({
 
   const setDataset = useCallback(
     async ({ datasetId, data }: { datasetId: number; data: LinkedDataset }) => {
-      const foo = await saveLinkedDataset({
+      await saveLinkedDataset({
         projectId,
         commitUuid,
         documentUuid: document.documentUuid,
@@ -274,8 +274,6 @@ export function useDocumentParameters({
         inputs: data.inputs,
         mappedInputs: data.mappedInputs,
       })
-
-      console.log("FOO", foo)
     },
     [saveLinkedDataset, projectId, commitUuid, document.documentUuid],
   )
@@ -290,18 +288,17 @@ export function useDocumentParameters({
         }),
       )
 
-      console.log('META', linkedDataset, document.datasetId)
-
       if (document.datasetId && linkedDataset) {
+        const datasetInputs = recalculateInputs<'dataset'>({
+          inputs: linkedDataset.inputs,
+          metadata,
+        })
         setDataset({
           datasetId: document.datasetId,
           data: {
             rowIndex: linkedDataset.rowIndex,
             mappedInputs: linkedDataset.mappedInputs,
-            inputs: recalculateInputs<'dataset'>({
-              inputs: linkedDataset.inputs,
-              metadata,
-            }),
+            inputs: datasetInputs
           },
         })
       }

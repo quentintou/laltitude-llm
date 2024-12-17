@@ -23,16 +23,18 @@ export async function saveLinkedDataset(
 ): Promise<TypedResult<DocumentVersion, Error>> {
   const prevLinked = document.linkedDataset ?? {}
   return await Transaction.call(async (tx) => {
+    const linkedDataset = {
+      ...prevLinked,
+      [dataset.id]: {
+        rowIndex: data.rowIndex,
+        inputs: data.inputs,
+        mappedInputs: data.mappedInputs,
+      },
+    }
+
     const result = await tx
       .update(documentVersions)
-      .set({
-        ...prevLinked,
-        [dataset.id]: {
-          rowIndex: data.rowIndex,
-          inputs: data.inputs,
-          mappedInputs: data.mappedInputs,
-        },
-      })
+      .set({ linkedDataset })
       .where(eq(documentVersions.id, document.id))
       .returning()
 
