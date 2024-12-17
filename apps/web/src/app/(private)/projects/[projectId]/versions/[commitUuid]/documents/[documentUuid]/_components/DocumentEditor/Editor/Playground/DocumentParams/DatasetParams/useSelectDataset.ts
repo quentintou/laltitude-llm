@@ -120,14 +120,6 @@ export function useSelectDataset({
       })
 
       setSelectedDataset(ds)
-      setDataset({
-        datasetId: ds.id,
-        data: {
-          rowIndex: 0,
-          inputs: {},
-          mappedInputs: {},
-        },
-      })
     },
     [
       datasets,
@@ -135,7 +127,6 @@ export function useSelectDataset({
       project.id,
       document.documentUuid,
       commit.uuid,
-      setDataset,
     ],
   )
   const isLoading = isLoadingDatasets || isLoadingPreviewDataset

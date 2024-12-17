@@ -91,10 +91,9 @@ export function useDocumentParameters({
   let inputsBySource = inputs[source].inputs
 
   const datasetId = document.datasetId
-  const linkedDataset = datasetId ? document.linkedDataset?.[datasetId] : null
-
-  const linkedInputs = linkedDataset?.inputs
-
+  const linkedDataset = datasetId
+    ? document.linkedDataset?.[datasetId]
+    : inputs.dataset
   const setInputs = useCallback(
     <S extends InputSource>(source: S, newInputs: Inputs<S>) => {
       setValue((oldState) => {
@@ -175,19 +174,9 @@ export function useDocumentParameters({
     [key, setValue],
   )
 
-  const setDataset = useCallback(
-    ({ datasetId, data }: { datasetId: number; data: LinkedDataset }) => {
-      // TODO: Store in DB
-      // rowIndex
-      // mappedInputs
-      // by datasetId
-    },
-    [],
-  )
-
   const copyDatasetInputsToManual = useCallback(() => {
-    setManualInputs(inputs['dataset'].inputs)
-  }, [inputs])
+    setManualInputs(linkedDataset?.inputs ?? inputs['dataset'].inputs)
+  }, [linkedDataset?.inputs, inputs])
 
   const setHistoryLog = useCallback(
     (logUuid: string) => {
@@ -232,6 +221,16 @@ export function useDocumentParameters({
     [inputs, key, setInputs],
   )
 
+  const setDataset = useCallback(
+    ({ datasetId, data }: { datasetId: number; data: LinkedDataset }) => {
+      // TODO: Store in DB
+      // rowIndex
+      // mappedInputs
+      // by datasetId
+    },
+    [],
+  )
+
   const onMetadataProcessed = useCallback(
     (metadata: ConversationMetadata) => {
       setInputs(
@@ -241,14 +240,22 @@ export function useDocumentParameters({
           metadata,
         }),
       )
-      // TODO: Persists in DB
-      setInputs(
-        'dataset',
-        recalculateInputs({
-          inputs: inputs.dataset.inputs,
-          metadata,
-        }),
-      )
+
+      if (document.datasetId) {
+        setDataset({
+          datasetId: document.datasetId,
+          data: {
+            rowIndex: linkedDataset?.rowIndex ?? inputs.dataset.rowIndex,
+            mappedInputs:
+              linkedDataset?.mappedInputs ?? inputs.dataset.mappedInputs,
+            inputs: recalculateInputs<'dataset'>({
+              inputs: linkedDataset?.inputs ?? inputs.dataset.inputs,
+              metadata,
+            }),
+          },
+        })
+      }
+
       setInputs(
         'history',
         recalculateInputs({
@@ -257,12 +264,8 @@ export function useDocumentParameters({
         }),
       )
     },
-    [inputs, setInputs, source],
+    [inputs, setInputs, source, document.datasetId, linkedDataset],
   )
-
-  if (source === INPUT_SOURCE.dataset) {
-    inputsBySource = linkedInputs ?? inputsBySource
-  }
 
   const parameters = useMemo(
     () => convertToParams(inputsBySource),
@@ -283,8 +286,9 @@ export function useDocumentParameters({
     },
     dataset: {
       datasetId: document.datasetId,
+      // TODO: Remove these fallback from localStorage after a while
       rowIndex: linkedDataset?.rowIndex ?? inputs['dataset'].rowIndex,
-      inputs: linkedInputs ?? inputs['dataset'].inputs,
+      inputs: linkedDataset?.inputs ?? inputs['dataset'].inputs,
       mappedInputs:
         linkedDataset?.mappedInputs ?? inputs['dataset'].mappedInputs,
       setDataset,
