@@ -25,9 +25,9 @@ type LocalPlaygroundInput<_S extends LocalInputSource = 'manual'> = {
 }
 export type PlaygroundInput<S extends InputSource> = S extends 'dataset'
   ? {
-      value: string
-      metadata: PlaygroundInputMetadata & { includeInPrompt: boolean }
-    }
+    value: string
+    metadata: PlaygroundInputMetadata & { includeInPrompt: boolean }
+  }
   : LocalPlaygroundInput<LocalInputSource>
 
 type ManualInput = PlaygroundInput<'manual'>
@@ -50,6 +50,10 @@ export type PlaygroundInputs<S extends InputSource> = {
   source: S
   manual: {
     inputs: Record<string, ManualInput>
+  }
+  // DEPRECATED: Remove after a while
+  dataset: LinkedDataset & {
+    datasetId: number | undefined
   }
   history: {
     logUuid: string | undefined

@@ -29,6 +29,7 @@ const EMPTY_LINKED_DATASET = {
 const EMPTY_INPUTS: PlaygroundInputs<'manual'> = {
   source: INPUT_SOURCE.manual,
   manual: { inputs: {} },
+  dataset: { datasetId: undefined, ...EMPTY_LINKED_DATASET },
   history: { logUuid: undefined, inputs: {} },
 }
 
@@ -79,6 +80,31 @@ function mapLogParametersToInputs({
 
 type InputsByDocument = Record<string, PlaygroundInputs<InputSource>>
 
+function getLinkedDataset({
+  document,
+  localInputs,
+}: {
+  document: DocumentVersion
+  localInputs: PlaygroundInputs<'dataset'>['dataset']
+}) {
+  const datasetId = document.datasetId
+  if (!datasetId) return EMPTY_LINKED_DATASET
+
+  const all = document.linkedDataset ?? {}
+  const isEmpty = Object.keys(all).length === 0
+
+  if (isEmpty) {
+    const legacyLocalData = localInputs
+    return {
+      rowIndex: legacyLocalData.rowIndex,
+      inputs: legacyLocalData.inputs,
+      mappedInputs: legacyLocalData.mappedInputs,
+    }
+  }
+
+  return all[datasetId] ? all[datasetId] : EMPTY_LINKED_DATASET
+}
+
 export function useDocumentParameters({
   document,
   commitVersionUuid,
@@ -101,12 +127,10 @@ export function useDocumentParameters({
   const key = `${commitVersionUuid}:${document.documentUuid}`
   const inputs = allInputs[key] ?? EMPTY_INPUTS
   const source = inputs.source
-
-  const datasetId = document.datasetId
-  const linkedDataset =
-    datasetId && document.linkedDataset?.[datasetId]
-      ? document.linkedDataset[datasetId]
-      : EMPTY_LINKED_DATASET
+  const linkedDataset = getLinkedDataset({
+    document,
+    localInputs: inputs.dataset,
+  })
 
   let inputsBySource =
     source === INPUT_SOURCE.dataset
@@ -241,7 +265,7 @@ export function useDocumentParameters({
 
   const setDataset = useCallback(
     async ({ datasetId, data }: { datasetId: number; data: LinkedDataset }) => {
-      await saveLinkedDataset({
+      const foo = await saveLinkedDataset({
         projectId,
         commitUuid,
         documentUuid: document.documentUuid,
@@ -250,6 +274,8 @@ export function useDocumentParameters({
         inputs: data.inputs,
         mappedInputs: data.mappedInputs,
       })
+
+      console.log("FOO", foo)
     },
     [saveLinkedDataset, projectId, commitUuid, document.documentUuid],
   )
@@ -263,6 +289,8 @@ export function useDocumentParameters({
           metadata,
         }),
       )
+
+      console.log('META', linkedDataset, document.datasetId)
 
       if (document.datasetId && linkedDataset) {
         setDataset({
