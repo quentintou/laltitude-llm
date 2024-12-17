@@ -50,9 +50,9 @@ import { useRefinement } from './useRefinement'
 
 export const DocumentEditorContext = createContext<
   | {
-    runDocumentAction: RunDocumentActionFn
-    addMessagesAction: AddMessagesActionFn
-  }
+      runDocumentAction: RunDocumentActionFn
+      addMessagesAction: AddMessagesActionFn
+    }
   | undefined
 >(undefined)
 

@@ -121,13 +121,7 @@ export function useSelectDataset({
 
       setSelectedDataset(ds)
     },
-    [
-      datasets,
-      assignDataset,
-      project.id,
-      document.documentUuid,
-      commit.uuid,
-    ],
+    [datasets, assignDataset, project.id, document.documentUuid, commit.uuid],
   )
   const isLoading = isLoadingDatasets || isLoadingPreviewDataset
 
@@ -151,13 +145,7 @@ export function useSelectDataset({
         },
       })
     },
-    [
-      inputs,
-      setDataset,
-      datasetPreview.rows,
-      selectedDataset,
-      mappedInputs,
-    ],
+    [inputs, setDataset, datasetPreview.rows, selectedDataset, mappedInputs],
   )
 
   const onSelectHeader = useCallback(
