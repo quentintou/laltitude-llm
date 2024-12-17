@@ -2,12 +2,12 @@ import { useCallback, useMemo } from 'react'
 
 import { recalculateInputs } from '$/hooks/useDocumentParameters/recalculateInputs'
 import {
-  DatasetSource,
   DocumentLog,
   DocumentVersion,
   INPUT_SOURCE,
   Inputs,
   InputSource,
+  LinkedDataset,
   PlaygroundInput,
   PlaygroundInputs,
 } from '@latitude-data/core/browser'
@@ -88,7 +88,12 @@ export function useDocumentParameters({
   const key = `${commitVersionUuid}:${document.documentUuid}`
   const inputs = allInputs[key] ?? EMPTY_INPUTS
   const source = inputs.source
-  const inputsBySource = inputs[source].inputs
+  let inputsBySource = inputs[source].inputs
+
+  const datasetId = document.datasetId
+  const linkedDataset = datasetId ? document.linkedDataset?.[datasetId] : null
+
+  const linkedInputs = linkedDataset?.inputs
 
   const setInputs = useCallback(
     <S extends InputSource>(source: S, newInputs: Inputs<S>) => {
@@ -112,13 +117,6 @@ export function useDocumentParameters({
 
   const setManualInputs = useCallback(
     (newInputs: Inputs<'manual'>) => setInputs(INPUT_SOURCE.manual, newInputs),
-    [setInputs],
-  )
-
-  const setDatasetInputs = useCallback(
-    (newInputs: Inputs<'dataset'>) =>
-      // TODO: Persists in DB
-      setInputs(INPUT_SOURCE.dataset, newInputs),
     [setInputs],
   )
 
@@ -178,22 +176,13 @@ export function useDocumentParameters({
   )
 
   const setDataset = useCallback(
-    (selected: DatasetSource) => {
-      setValue((old) => {
-        const { state, doc } = getDocState(old, key)
-        return {
-          ...state,
-          [key]: {
-            ...doc,
-            dataset: {
-              ...doc.dataset,
-              ...selected,
-            },
-          },
-        }
-      })
+    ({ datasetId, data }: { datasetId: number; data: LinkedDataset }) => {
+      // TODO: Store in DB
+      // rowIndex
+      // mappedInputs
+      // by datasetId
     },
-    [allInputs, key, setValue],
+    [],
   )
 
   const copyDatasetInputsToManual = useCallback(() => {
@@ -271,6 +260,10 @@ export function useDocumentParameters({
     [inputs, setInputs, source],
   )
 
+  if (source === INPUT_SOURCE.dataset) {
+    inputsBySource = linkedInputs ?? inputsBySource
+  }
+
   const parameters = useMemo(
     () => convertToParams(inputsBySource),
     [inputsBySource],
@@ -289,14 +282,13 @@ export function useDocumentParameters({
       setInputs: setManualInputs,
     },
     dataset: {
-      // TODO: Fetch from DB
-      datasetId: inputs['dataset'].datasetId,
-      rowIndex: inputs['dataset'].rowIndex,
-      inputs: inputs['dataset'].inputs,
-      mappedInputs: inputs['dataset'].mappedInputs,
-      setInputs: setDatasetInputs,
-      copyToManual: copyDatasetInputsToManual,
+      datasetId: document.datasetId,
+      rowIndex: linkedDataset?.rowIndex ?? inputs['dataset'].rowIndex,
+      inputs: linkedInputs ?? inputs['dataset'].inputs,
+      mappedInputs:
+        linkedDataset?.mappedInputs ?? inputs['dataset'].mappedInputs,
       setDataset,
+      copyToManual: copyDatasetInputsToManual,
     },
     history: {
       logUuid: inputs['history'].logUuid,

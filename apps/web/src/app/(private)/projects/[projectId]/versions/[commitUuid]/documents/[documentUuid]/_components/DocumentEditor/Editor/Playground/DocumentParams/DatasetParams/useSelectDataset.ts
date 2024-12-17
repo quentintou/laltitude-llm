@@ -73,7 +73,7 @@ export function useSelectDataset({
     },
   })
   const {
-    dataset: { inputs, mappedInputs, rowIndex, setInputs, setDataset },
+    dataset: { inputs, mappedInputs, rowIndex, setDataset },
   } = useDocumentParameters({
     document,
     commitVersionUuid,
@@ -120,7 +120,14 @@ export function useSelectDataset({
       })
 
       setSelectedDataset(ds)
-      setDataset({ rowIndex: 0, datasetId: ds.id, mappedInputs: {} })
+      setDataset({
+        datasetId: ds.id,
+        data: {
+          rowIndex: 0,
+          inputs: {},
+          mappedInputs: {},
+        },
+      })
     },
     [
       datasets,
@@ -144,16 +151,17 @@ export function useSelectDataset({
         mappedInputs: mapped,
         rowIndex,
       })
-      setInputs(newInputs)
       setDataset({
-        rowIndex,
         datasetId: selectedDataset.id,
-        mappedInputs: mapped,
+        data: {
+          rowIndex,
+          inputs: newInputs,
+          mappedInputs: mapped,
+        },
       })
     },
     [
       inputs,
-      setInputs,
       setDataset,
       datasetPreview.rows,
       selectedDataset,
@@ -163,6 +171,8 @@ export function useSelectDataset({
 
   const onSelectHeader = useCallback(
     (param: string) => (headerIndex: number) => {
+      if (!selectedDataset) return
+
       const prevMapped = mappedInputs ?? {}
       const mapped = { ...prevMapped, [param]: Number(headerIndex) }
       const newInputs = mappedToInputs({
@@ -172,15 +182,16 @@ export function useSelectDataset({
         rowIndex: rowIndex ?? 0,
       })
       setDataset({
-        rowIndex: rowIndex ?? 0,
-        datasetId: selectedDataset?.id,
-        mappedInputs: mapped,
+        datasetId: selectedDataset.id,
+        data: {
+          inputs: newInputs,
+          rowIndex: rowIndex ?? 0,
+          mappedInputs: mapped,
+        },
       })
-      setInputs(newInputs)
     },
     [
       inputs,
-      setInputs,
       setDataset,
       rowIndex,
       mappedInputs,
