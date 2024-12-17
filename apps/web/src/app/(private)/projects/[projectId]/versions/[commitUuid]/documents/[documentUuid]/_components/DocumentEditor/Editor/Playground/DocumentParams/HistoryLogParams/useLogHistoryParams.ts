@@ -21,8 +21,7 @@ export function useLogHistoryParams({
 }) {
   const { project } = useCurrentProject()
   const {
-    mapDocParametersToInputs,
-    history: { setHistoryLog, logUuid },
+    history: { setHistoryLog, logUuid, mapDocParametersToInputs },
   } = useDocumentParameters({
     document,
     commitVersionUuid,
