@@ -24,7 +24,7 @@ export function useLogHistoryParams({
     mapDocParametersToInputs,
     history: { setHistoryLog, logUuid },
   } = useDocumentParameters({
-    documentVersionUuid: document.documentUuid,
+    document,
     commitVersionUuid,
   })
 

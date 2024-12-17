@@ -52,7 +52,7 @@ export function InputMapper({
     setSource,
     dataset: { inputs, copyToManual },
   } = useDocumentParameters({
-    documentVersionUuid: document.documentUuid,
+    document,
     commitVersionUuid: commit.uuid,
   })
   return (

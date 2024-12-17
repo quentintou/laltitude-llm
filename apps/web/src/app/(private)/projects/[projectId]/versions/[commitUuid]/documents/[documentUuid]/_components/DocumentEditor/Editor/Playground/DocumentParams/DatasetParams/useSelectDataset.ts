@@ -75,7 +75,7 @@ export function useSelectDataset({
   const {
     dataset: { inputs, mappedInputs, rowIndex, setInputs, setDataset },
   } = useDocumentParameters({
-    documentVersionUuid: document.documentUuid,
+    document,
     commitVersionUuid,
   })
   const datasetOptions = useMemo(

@@ -50,9 +50,9 @@ import { useRefinement } from './useRefinement'
 
 export const DocumentEditorContext = createContext<
   | {
-      runDocumentAction: RunDocumentActionFn
-      addMessagesAction: AddMessagesActionFn
-    }
+    runDocumentAction: RunDocumentActionFn
+    addMessagesAction: AddMessagesActionFn
+  }
   | undefined
 >(undefined)
 
@@ -185,7 +185,7 @@ export default function DocumentEditor({
 
   const { onMetadataProcessed } = useDocumentParameters({
     commitVersionUuid: commit.uuid,
-    documentVersionUuid: document.documentUuid,
+    document,
   })
   const { metadata, runReadMetadata } = useMetadata({
     onMetadataProcessed: onMetadataProcessed,

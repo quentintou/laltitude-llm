@@ -4,6 +4,7 @@ import { recalculateInputs } from '$/hooks/useDocumentParameters/recalculateInpu
 import {
   DatasetSource,
   DocumentLog,
+  DocumentVersion,
   INPUT_SOURCE,
   Inputs,
   InputSource,
@@ -73,10 +74,10 @@ function mapLogParametersToInputs({
 type InputsByDocument = Record<string, PlaygroundInputs<InputSource>>
 
 export function useDocumentParameters({
-  documentVersionUuid,
+  document,
   commitVersionUuid,
 }: {
-  documentVersionUuid: string
+  document: DocumentVersion
   commitVersionUuid: string
 }) {
   // TODO: Delete stale inputs as new inputs could eventually not fit
@@ -84,7 +85,7 @@ export function useDocumentParameters({
     key: AppLocalStorage.playgroundParameters,
     defaultValue: {},
   })
-  const key = `${commitVersionUuid}:${documentVersionUuid}`
+  const key = `${commitVersionUuid}:${document.documentUuid}`
   const inputs = allInputs[key] ?? EMPTY_INPUTS
   const source = inputs.source
   const inputsBySource = inputs[source].inputs
